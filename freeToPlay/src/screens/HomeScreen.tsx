@@ -1,17 +1,24 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useState} from 'react';
-import {Button, StyleSheet, Text, View} from 'react-native';
+import {Alert, StyleSheet, Text, View} from 'react-native';
 import GlobalStyles from '../theme/GlobalStyle';
 import {RootStack} from '../navigators/StackNavigator';
 import Search from '../components/Search';
+import useGames from '../hooks/useGames';
+import {ScrollView} from 'react-native-gesture-handler';
+import GameItem from '../components/GameItem';
+
 export interface Props extends StackScreenProps<RootStack, 'Home'> {}
 
 export const HomeScreen = ({navigation}: Props) => {
   const [textSearch, setTextSearch] = useState('');
 
+  const {games, isLoading, isError, messageError} = useGames();
+
   const search = (text: string) => {
     setTextSearch(text);
   };
+
   return (
     <View style={GlobalStyles.screenContainer}>
       <View style={styles.containerTitle}>
@@ -20,10 +27,22 @@ export const HomeScreen = ({navigation}: Props) => {
       <View style={styles.searchContainer}>
         <Search funcSearch={setTextSearch} textValue={textSearch} />
       </View>
-      <Button
-        onPress={() => navigation.navigate('Details')}
-        title="Go to Details"
-      />
+
+      {!isLoading ? (
+        !isError ? (
+          <ScrollView style={{paddingHorizontal: 10}}>
+            {games.map(game => {
+              return <GameItem key={game.id} game={game} />;
+            })}
+            <View style={{marginBottom: 50}}></View>
+          </ScrollView>
+        ) : (
+          //  show if an error ocurred
+          Alert.alert('Error', messageError)
+        )
+      ) : (
+        <Text style={{color: 'white'}}>Cargando.....</Text>
+      )}
     </View>
   );
 };
@@ -43,7 +62,7 @@ const styles = StyleSheet.create({
   },
 
   searchContainer: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     marginBottom: 8,
   },
 });
