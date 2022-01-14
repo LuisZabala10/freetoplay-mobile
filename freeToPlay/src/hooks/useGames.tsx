@@ -9,7 +9,7 @@ interface GameState {
   messageError: string;
 }
 
-const useGames = () => {
+const useGames = (textToSearch?: string) => {
   const [state, setstate] = useState<GameState>({
     games: [],
     isLoading: true,
@@ -47,6 +47,23 @@ const useGames = () => {
   useEffect(() => {
     getGames();
   }, []);
+
+  useEffect(() => {
+    if (textToSearch !== '') {
+      setstate({...state, isLoading: true});
+      const gamesFiltered = state.games.filter(game =>
+        game.title.toLowerCase().includes(textToSearch!.toLocaleLowerCase()),
+      );
+
+      setstate({
+        ...state,
+        games: gamesFiltered,
+        isLoading: false,
+      });
+    } else {
+      getGames();
+    }
+  }, [textToSearch]);
 
   return {
     ...state,

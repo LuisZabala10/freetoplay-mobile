@@ -2,14 +2,22 @@ import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {GameResponse} from '../interface/gameResponse';
+import {StackNavigationProp, StackScreenProps} from '@react-navigation/stack';
+import {RootStack} from '../navigators/StackNavigator';
+import {useNavigation} from '@react-navigation/native';
 
 interface Props {
   game: GameResponse;
 }
 
+type StackDetailsScreen = StackNavigationProp<RootStack, 'Details'>;
+
 const GameItem = ({game}: Props) => {
+  const navigation = useNavigation<StackDetailsScreen>();
   return (
-    <TouchableOpacity activeOpacity={0.85}>
+    <TouchableOpacity
+      activeOpacity={0.85}
+      onPress={() => navigation.navigate('Details', game)}>
       <View style={styles.cardContainer}>
         <View style={styles.imageContainer}>
           <Image style={styles.image} source={{uri: game.thumbnail}} />
@@ -30,7 +38,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 10,
     height: 110,
-    backgroundColor: '#404dac',
+    backgroundColor: 'rgb(45,49,66)',
     borderTopLeftRadius: 5,
     borderTopEndRadius: 5,
     elevation: 10,

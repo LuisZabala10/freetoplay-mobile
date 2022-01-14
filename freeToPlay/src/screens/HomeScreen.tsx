@@ -7,13 +7,14 @@ import Search from '../components/Search';
 import useGames from '../hooks/useGames';
 import {ScrollView} from 'react-native-gesture-handler';
 import GameItem from '../components/GameItem';
+import {ActivityIndicator} from 'react-native-paper';
 
 export interface Props extends StackScreenProps<RootStack, 'Home'> {}
 
 export const HomeScreen = ({navigation}: Props) => {
   const [textSearch, setTextSearch] = useState('');
 
-  const {games, isLoading, isError, messageError} = useGames();
+  const {games, isLoading, isError, messageError} = useGames(textSearch);
 
   const search = (text: string) => {
     setTextSearch(text);
@@ -25,14 +26,14 @@ export const HomeScreen = ({navigation}: Props) => {
         <Text style={styles.heardertitle}> Free Games </Text>
       </View>
       <View style={styles.searchContainer}>
-        <Search funcSearch={setTextSearch} textValue={textSearch} />
+        <Search funcSearch={search} textValue={textSearch} />
       </View>
 
       {!isLoading ? (
         !isError ? (
           <ScrollView style={{paddingHorizontal: 10}}>
             {games.map(game => {
-              return <GameItem key={game.id} game={game} />;
+              return <GameItem key={game.id} game={game}  />;
             })}
             <View style={{marginBottom: 50}}></View>
           </ScrollView>
@@ -41,7 +42,7 @@ export const HomeScreen = ({navigation}: Props) => {
           Alert.alert('Error', messageError)
         )
       ) : (
-        <Text style={{color: 'white'}}>Cargando.....</Text>
+        <ActivityIndicator color="white" size={50} />
       )}
     </View>
   );
